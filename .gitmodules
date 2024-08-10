@@ -1,0 +1,6 @@
+[submodule "cimg"]
+	path = dependencies/cimg
+	url = https://github.com/GreycLab/CImg.git
+[submodule "sfml"]
+	path = dependencies/sfml
+	url = https://github.com/SFML/SFML.git

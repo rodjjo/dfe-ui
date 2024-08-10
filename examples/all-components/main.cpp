@@ -7,7 +7,7 @@ namespace dfe
 {
     void run_application() {
         auto win = dfe_ui::window_new(1280, 720, "Stable Diffusion");
-        auto scrolb = std::make_shared<dfe_ui::Scrollbox>(win.get(), 50, 50, win->w() / 2, win->h() / 2);
+        auto scrolb = std::make_shared<dfe_ui::Scrollbox>(win.get(), 0, 0, win->w(), win->h());
 
         scrolb->autoscroll(true);
         win->add(scrolb);

@@ -171,8 +171,12 @@ void ImageViewer::handle_mouse_wheel(int8_t direction, int x, int y) {
     }
 }
 
+bool ImageViewer::control_pressed() {
+    return sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RControl);
+}
+
 void ImageViewer::handle_mouse_left_pressed(int x, int y)  {
-    m_mouse_control = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::RControl);
+    m_mouse_control = control_pressed();
     m_mouse_pressed = true;
     m_mouse_down_x = x;
     m_mouse_down_y = y;
@@ -198,7 +202,7 @@ void ImageViewer::handle_mouse_left_released(int x, int y) {
 }
 
 component_cursor_t ImageViewer::cursor() {
-    if (!m_fit_image && m_mouse_control && m_mouse_pressed) {
+    if (!m_fit_image && control_pressed()) {
         return cursor_drag;
     }
     return Component::cursor();

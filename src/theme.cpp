@@ -48,6 +48,13 @@ namespace {
     // modal
     uint32_t modal_fill_color_               = 0x000000CC;
     
+    uint32_t menu_text_size_                 = 20;
+    uint32_t menu_text_color_                = 0x000000FF;
+    uint32_t menu_selected_text_color_       = 0xFFFFFFFF;
+    uint32_t menu_fill_color_                = 0xCCCCCCFF;
+    uint32_t menu_selected_fill_color_       = 0x000000FF;
+    uint32_t menu_outline_color_             = 0x000000FF;
+
 }
 
 uint32_t editor_text_color() {
@@ -187,6 +194,31 @@ uint32_t editor_margin() {
 uint32_t modal_fill_color() {
     return modal_fill_color_;
 }
-    
+
+uint32_t menu_text_size() {
+    return menu_text_size_;
+}
+
+uint32_t menu_text_color() {
+    return menu_text_color_;
+}
+
+uint32_t menu_selected_text_color() {
+    return menu_selected_text_color_;
+}
+
+uint32_t menu_fill_color() {
+    return menu_fill_color_;
+}
+
+uint32_t menu_selected_fill_color() {
+    return menu_selected_fill_color_;
+}
+
+uint32_t menu_outline_color() {
+    return menu_outline_color_;
+}
+
+
 } // namespace theme
 } // namespace dfe_ui

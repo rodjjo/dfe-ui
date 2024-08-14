@@ -110,8 +110,6 @@ size_t Component::component_count() {
     return m_items.size();
 }
 
-
-
 Component & Component::at(size_t index) {
     return *m_items[index].get();
 }

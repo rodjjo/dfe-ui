@@ -242,7 +242,7 @@ IconTexture::IconTexture() {
                     target_buffer += target_stride;
                 }
             }
-            if (current_x + info.w > (img_width - pack_pixels)) {
+            if (current_x + info.w >= (img_width - pack_pixels)) {
                 current_y +=  current_h;
                 current_h = 0;
                 current_x = 0;
@@ -291,7 +291,7 @@ namespace {
 
 IconTextureBase* load_icons_texture() {
     if (!textures) {
-        textures = std::make_shared<IconTexture>();;
+        textures = std::make_shared<IconTexture>();
     }
     return textures.get();
 }

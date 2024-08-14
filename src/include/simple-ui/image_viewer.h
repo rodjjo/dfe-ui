@@ -37,10 +37,12 @@ namespace dfe_ui
             void handle_mouse_moved(int x, int y) override;
             component_cursor_t cursor() override;
             bool clickable() override;
+
         private:
             void update_texture();
             std::pair<int, int> get_image_origin();
             float compute_scale();
+            bool control_pressed();
 
         private:
             bool m_mouse_control = false;

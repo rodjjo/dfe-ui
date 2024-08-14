@@ -27,12 +27,23 @@ namespace dfe
         auto progress = std::make_shared<dfe_ui::ProgressBar>(win.get(), 65 + 185 + 50, 270 + 50 + 55, 280, 45);
         auto listbox = std::make_shared<dfe_ui::Listbox>(win.get(), 65 + 185 + 50, 270 + 110 + 55, 280, 45 * 5);
         auto combo = std::make_shared<dfe_ui::Combobox>(win.get(), 65 + 185 + 310, 50, 300, 35);
-        auto edito_wrap = std::make_shared<dfe_ui::TextEditor>(win.get(), combo->x() + combo->w() + 5, 50, 300, 300, dfe_ui::editor_type_t::editor_multiline_wrap);
-        edito_wrap->halign(dfe_ui::text_left);
-        edito_wrap->vertical_scrollbar(dfe_ui::scrollbar_auto);
-        // edito_wrap->horizontal_scrollbar(dfe_ui::scrollbar_allways);
-        edito_wrap->content(std::wstring(L"Esse é um texto muito longo com quebra de linha"));
-        auto image = std::make_shared<dfe_ui::ImageViewer>(win.get(), edito_wrap->x(), edito_wrap->y() + edito_wrap->h(), edito_wrap->w(), edito_wrap->h());
+        auto editor_wrap = std::make_shared<dfe_ui::TextEditor>(win.get(), combo->x() + combo->w() + 5, 50, 300, 300, dfe_ui::editor_type_t::editor_multiline_wrap);
+
+        auto menu = std::make_shared<dfe_ui::PopupMenu>(win.get());
+        auto item1 = menu->add(std::wstring(L"Add"), dfe_ui::img_24x24_new);
+        auto item2 = menu->add(std::wstring(L"Remove"), dfe_ui::img_24x24_flash_drive);
+
+        auto submenu = std::make_shared<dfe_ui::PopupMenu>(win.get());
+        auto item3 = submenu->add(std::wstring(L"Node"));
+        auto item4 = submenu->add(std::wstring(L"Route"));
+        auto item5 = submenu->add(std::wstring(L"Image"));
+        item1->submenu(submenu);
+
+        editor_wrap->halign(dfe_ui::text_left);
+        editor_wrap->vertical_scrollbar(dfe_ui::scrollbar_auto);
+        // editor_wrap->horizontal_scrollbar(dfe_ui::scrollbar_allways);
+        editor_wrap->content(std::wstring(L"Esse é um texto muito longo com quebra de linha"));
+        auto image = std::make_shared<dfe_ui::ImageViewer>(win.get(), editor_wrap->x(), editor_wrap->y() + editor_wrap->h(), editor_wrap->w(), editor_wrap->h());
         image->fit_image(false);
         image->image(dfe_ui::RawImage::from_file(L"examples/data/test-image.jpg"));
 
@@ -54,8 +65,9 @@ namespace dfe
 
         progress->progress(45);
 
-        button->onclick([comp{modal.get()}] (dfe_ui::Component *self){
-            comp->float_on();
+        button->onclick([comp{modal.get()}, menu{menu.get()}] (dfe_ui::Component *self){
+            // comp->float_on();
+            menu->popup(self->abs_x() + self->abs_w() + 2, self->abs_y());
         });
         
         editor->content(std::wstring(L"Editor"));
@@ -140,7 +152,7 @@ namespace dfe
         scrolb->add(progress);
         scrolb->add(listbox);
         scrolb->add(combo);
-        scrolb->add(edito_wrap);
+        scrolb->add(editor_wrap);
         scrolb->add(image);
 
         win->scale(1.0);

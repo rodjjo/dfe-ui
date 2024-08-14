@@ -6,15 +6,13 @@ namespace dfe_ui {
 namespace theme {
 
 // editor
-uint32_t editor_text_color();
-uint32_t editor_outline_color();
-uint32_t editor_fill_color();
 uint32_t editor_cursor_color();
-uint32_t editor_selection_color();
-void     editor_color(uint32_t text_color, uint32_t fill_color, uint32_t outline_color, 
-    uint32_t cursor_color, uint32_t selection_color);
+uint32_t editor_fill_color();
 uint32_t editor_line_spacing();
 uint32_t editor_margin();
+uint32_t editor_outline_color();
+uint32_t editor_selection_color();
+uint32_t editor_text_color();
 
 // label
 uint32_t label_text_color();
@@ -33,6 +31,15 @@ void button_color(uint32_t text, uint32_t fill, uint32_t outline, uint32_t highl
 uint8_t icon_margin();
 void icon_margin(uint8_t value);
 
+// menu
+
+uint32_t menu_text_size();
+uint32_t menu_text_color();
+uint32_t menu_selected_text_color();
+uint32_t menu_fill_color();
+uint32_t menu_selected_fill_color();
+uint32_t menu_outline_color();
+
 // scrollbar
 uint32_t scroolbar_color();
 uint32_t scroolbar_highlighted_color();
@@ -40,8 +47,8 @@ uint32_t scroolbar_highlighted_color();
 // progressbar
 uint32_t progress_bar_color();
 uint32_t progress_bar_outline_color();
-uint32_t progress_bar_text_color();
 uint32_t progress_bar_progress_color();
+uint32_t progress_bar_text_color();
 
 // listbox
 uint8_t listbox_item_margin();

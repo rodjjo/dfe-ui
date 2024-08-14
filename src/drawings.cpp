@@ -5,13 +5,6 @@
 namespace dfe_ui
 {
 
-namespace 
-{
-    
-} // namespace 
-
-
-
 Drawing::Drawing(Type drawing_type) : m_drawing_type(drawing_type), m_direction(direction_top) {
 }
 

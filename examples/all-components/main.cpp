@@ -9,6 +9,8 @@ namespace dfe
         auto win = dfe_ui::window_new(1280, 720, "Stable Diffusion");
         auto scrolb = std::make_shared<dfe_ui::Scrollbox>(win.get(), 0, 0, win->w(), win->h());
 
+        scrolb->zoom(1.0);
+
         scrolb->autoscroll(true);
         win->add(scrolb);
         auto modal = std::make_shared<dfe_ui::Modal>(win.get());

@@ -428,7 +428,14 @@ void Component::paint_constraint(int x, int y, int w, int h, int render_y, std::
 
 int Component::abs_x() {
     int dx = status() == component_status_dragging ? m_drag_x : 0;
-    float scale = abs_scale();
+
+    float scale;
+    if (ignore_scale()) {
+        scale = m_parent ? m_parent->abs_scale() : 1.0;
+    } else {
+        scale = abs_scale();
+    }
+
     int vx = dx + m_x * scale;
     auto p = parent();
     while (p) {
@@ -446,7 +453,14 @@ int Component::abs_x() {
 
 int Component::abs_y() {
     int dy = status() == component_status_dragging ? m_drag_y : 0;
-    float scale = abs_scale();
+    
+    float scale;
+    if (ignore_scale()) {
+        scale = m_parent ? m_parent->abs_scale() : 1.0;
+    } else {
+        scale = abs_scale();
+    }
+
     int vy = dy + m_y * scale;
     auto p = parent();
     while (p) {
@@ -481,6 +495,12 @@ int Component::abs_scrollx() {
         sx += p->m_scroll_x;
         p = p->m_parent;
     }
+    if (ignore_scale()) {
+        if (m_parent) {
+            return sx * m_parent->abs_scale();
+        }
+        return sx;
+    }
     return sx * abs_scale();
 }
 
@@ -503,6 +523,12 @@ int Component::abs_scrolly() {
         sy += p->m_scroll_y;
         p = p->m_parent;
     }
+    if (ignore_scale()) {
+        if (m_parent) {
+            return sy * m_parent->abs_scale();
+        }
+        return sy;
+    }
     return sy * abs_scale();
 }
 
@@ -513,6 +539,10 @@ int Component::scroll_x() {
 
 int Component::scroll_y() {
     return m_scroll_y;
+}
+
+bool Component::ignore_scale() {
+    return false;
 }
 
 float Component::scale() {
@@ -533,10 +563,16 @@ float Component::abs_scale() {
 }
 
 int Component::abs_w() {
+    if (ignore_scale()) {
+        return m_w * (m_parent ? m_parent->abs_scale() : 1.0);
+    }
     return m_w * abs_scale();
 }
 
 int Component::abs_h() {
+    if (ignore_scale()) {
+        return m_h * (m_parent ? m_parent->abs_scale() : 1.0);
+    }
     return m_h * abs_scale();
 }
 

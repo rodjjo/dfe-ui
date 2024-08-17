@@ -7,7 +7,7 @@ namespace dfe_ui {
 
 
 Scrollbox::Scrollbox(Window * window, int x, int y, int w, int h) : Component(window) {
-    m_scroll_component.reset(new Component(window));
+    m_scroll_component.reset(new ZoomEnabledComponent(window));
     m_scroll_component->coordinates(0, 0, w, h);
     this->coordinates(x, y, w, h);
     m_vertical_sb.reset(new Scrollbar(window, w, 0, w - theme::scrollbox_scrollbar_size(), h, true));
@@ -116,17 +116,17 @@ void Scrollbox::compute_autoscroll() {
     int mx = 0;
     int my = 0;
     for (size_t i = 0; i < m_scroll_component->component_count(); i++) {
-        if (mx < m_scroll_component->at(i).x()) {
-            mx = m_scroll_component->at(i).x() + m_scroll_component->at(i).w();
+        if (mx < m_scroll_component->at(i).abs_x()) {
+            mx = m_scroll_component->at(i).abs_x() + m_scroll_component->at(i).abs_w();
         }
-        if (my < m_scroll_component->at(i).y()) {
-            my = m_scroll_component->at(i).y() + m_scroll_component->at(i).h();
+        if (my < m_scroll_component->at(i).abs_y()) {
+            my = m_scroll_component->at(i).abs_y() + m_scroll_component->at(i).abs_h();
         }
     }
     mx += theme::scrollbox_margin();
     my += theme::scrollbox_margin();
-    mx -= m_scroll_component->w();
-    my -= m_scroll_component->h();
+    mx -= m_scroll_component->abs_w();
+    my -= m_scroll_component->abs_h();
     if (mx < 0) {
         mx = 0;
     }
@@ -198,6 +198,14 @@ void Scrollbox::paint(sf::RenderTarget *render_target) {
     ar.position(abs_x(), abs_y());
     ar.margin(0);
     ar.draw(render_target);
+}
+
+float Scrollbox::zoom() {
+    return m_scroll_component->scale();
+}
+
+void Scrollbox::zoom(float value) {
+    m_scroll_component->scale(value);
 }
 
 } // namespace dfe_ui

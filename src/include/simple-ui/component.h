@@ -104,6 +104,7 @@ class Component : public std::enable_shared_from_this<Component>  {
     virtual bool clickable();
     virtual bool editable();
     virtual bool focusable();
+
     Component *parent();
     virtual Component *find_top_clickable(int &x, int &y);
     void paint_children(sf::RenderTarget *render_target, bool check_status=true);
@@ -129,8 +130,8 @@ class Component : public std::enable_shared_from_this<Component>  {
 
    protected:
     friend class Window;
+    virtual bool ignore_scale();
     virtual void paint(sf::RenderTarget *render_target);
-    
     virtual void handle_parent_resized() {};
     virtual void handle_child_count_changed() {};
     virtual void handle_text_entered(wchar_t unicode) {};

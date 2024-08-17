@@ -6,6 +6,15 @@
 
 namespace dfe_ui {
 
+class ZoomEnabledComponent : public Component {
+   public:
+      ZoomEnabledComponent(Window * window) : Component(window) {}
+   protected:  
+      bool ignore_scale() override {
+         return true;
+      }
+};
+
 class Scrollbox : public Component {
  public:
     Scrollbox(Window * window, int x, int y, int w, int h);
@@ -25,6 +34,8 @@ class Scrollbox : public Component {
    virtual void paint(sf::RenderTarget *render_target) override;
    void add(std::shared_ptr<Component> child) override;
    Component & scroll_component();
+   float zoom();
+   void zoom(float value);
 
  private:
     void compute_autoscroll();

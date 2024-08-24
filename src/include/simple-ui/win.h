@@ -13,7 +13,8 @@ class Window : public Component {
     Window(unsigned int w, unsigned int h, const char *title);
     virtual ~Window();
     void run();
-
+    void pool_events();
+    
   private:
     friend class Component;
     void add_floating_commponent(Component *comp);

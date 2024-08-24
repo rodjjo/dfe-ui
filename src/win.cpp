@@ -26,90 +26,89 @@ Window::~Window() {
     unload_icons_texture();
 }
 
-void Window::run() {
-    auto window = m_window.get();
-    
-    clock::restart_clock();
-
-    while (window->isOpen())
+void Window::pool_events() {
+    while (const std::optional event = m_window->pollEvent())
     {
-        // Handle events
-        while (const std::optional event = window->pollEvent())
+        // Window closed: exit
+        if (event->is<sf::Event::Closed>())
         {
-            // Window closed: exit
-            if (event->is<sf::Event::Closed>())
-            {
-                window->close();
-                break;
+            m_window->close();
+            break;
+        }
+        
+        if (const auto* const resized_event = event->getIf<sf::Event::Resized>()) {
+            m_window->setView(sf::View(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(resized_event->size.x, resized_event->size.y))));
+            this->size(resized_event->size.x, resized_event->size.y);
+        } else if (const auto* const pressed_event = event->getIf<sf::Event::TextEntered>()) {
+            this->handle_text_entered(pressed_event->unicode);
+        } else if (const auto* const mouse_pressed_event = event->getIf<sf::Event::MouseButtonPressed>()) {
+            if (mouse_pressed_event->button == sf::Mouse::Button::Left) {
+                this->m_mouse_left_pressed = true;
+                this->handle_mouse_left_pressed(mouse_pressed_event->position.x, mouse_pressed_event->position.y);
+            } else if (mouse_pressed_event->button == sf::Mouse::Button::Middle) {
+                this->m_mouse_middle_pressed = true;
+                this->handle_mouse_middle_pressed(mouse_pressed_event->position.x, mouse_pressed_event->position.y);
+            } else if (mouse_pressed_event->button == sf::Mouse::Button::Right) {
+                this->m_mouse_middle_pressed = true;
+                this->handle_mouse_right_pressed(mouse_pressed_event->position.x, mouse_pressed_event->position.y);
+            } 
+        } else if (const auto* const mouse_released_event = event->getIf<sf::Event::MouseButtonReleased>()) {
+            if (mouse_released_event->button == sf::Mouse::Button::Left) {
+                this->m_mouse_left_pressed = false;
+                this->handle_mouse_left_released(mouse_released_event->position.x, mouse_released_event->position.y);
+            } else if (mouse_released_event->button == sf::Mouse::Button::Middle) {
+                this->m_mouse_middle_pressed = false;
+                this->handle_mouse_middle_released(mouse_released_event->position.x, mouse_released_event->position.y);
+            } else if (mouse_released_event->button == sf::Mouse::Button::Right) {
+                this->m_mouse_middle_pressed = false;
+                this->handle_mouse_right_released(mouse_released_event->position.x, mouse_released_event->position.y);
+            } 
+        } else if (const auto* const mouse_moved_event = event->getIf<sf::Event::MouseMoved>()) {
+            this->handle_mouse_moved(mouse_moved_event->position.x, mouse_moved_event->position.y);
+            if (m_mouse_left_pressed && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                m_mouse_left_pressed = false;
+                this->handle_mouse_left_released(mouse_moved_event->position.x, mouse_moved_event->position.y);
             }
-            
-            if (const auto* const resized_event = event->getIf<sf::Event::Resized>()) {
-                window->setView(sf::View(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(resized_event->size.x, resized_event->size.y))));
-                this->size(resized_event->size.x, resized_event->size.y);
-            } else if (const auto* const pressed_event = event->getIf<sf::Event::TextEntered>()) {
-                this->handle_text_entered(pressed_event->unicode);
-            } else if (const auto* const mouse_pressed_event = event->getIf<sf::Event::MouseButtonPressed>()) {
-                if (mouse_pressed_event->button == sf::Mouse::Button::Left) {
-                    this->m_mouse_left_pressed = true;
-                    this->handle_mouse_left_pressed(mouse_pressed_event->position.x, mouse_pressed_event->position.y);
-                } else if (mouse_pressed_event->button == sf::Mouse::Button::Middle) {
-                    this->m_mouse_middle_pressed = true;
-                    this->handle_mouse_middle_pressed(mouse_pressed_event->position.x, mouse_pressed_event->position.y);
-                } else if (mouse_pressed_event->button == sf::Mouse::Button::Right) {
-                    this->m_mouse_middle_pressed = true;
-                    this->handle_mouse_right_pressed(mouse_pressed_event->position.x, mouse_pressed_event->position.y);
-                } 
-            } else if (const auto* const mouse_released_event = event->getIf<sf::Event::MouseButtonReleased>()) {
-                if (mouse_released_event->button == sf::Mouse::Button::Left) {
-                    this->m_mouse_left_pressed = false;
-                    this->handle_mouse_left_released(mouse_released_event->position.x, mouse_released_event->position.y);
-                } else if (mouse_released_event->button == sf::Mouse::Button::Middle) {
-                    this->m_mouse_middle_pressed = false;
-                    this->handle_mouse_middle_released(mouse_released_event->position.x, mouse_released_event->position.y);
-                } else if (mouse_released_event->button == sf::Mouse::Button::Right) {
-                    this->m_mouse_middle_pressed = false;
-                    this->handle_mouse_right_released(mouse_released_event->position.x, mouse_released_event->position.y);
-                } 
-            } else if (const auto* const mouse_moved_event = event->getIf<sf::Event::MouseMoved>()) {
-                this->handle_mouse_moved(mouse_moved_event->position.x, mouse_moved_event->position.y);
-                if (m_mouse_left_pressed && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-                    m_mouse_left_pressed = false;
-                    this->handle_mouse_left_released(mouse_moved_event->position.x, mouse_moved_event->position.y);
-                }
-                if (m_mouse_right_pressed && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
-                    m_mouse_right_pressed = false;
-                    this->handle_mouse_right_released(mouse_moved_event->position.x, mouse_moved_event->position.y);
-                }
-                if (m_mouse_middle_pressed && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle)) {
-                    m_mouse_middle_pressed = false;
-                    this->handle_mouse_middle_released(mouse_moved_event->position.x, mouse_moved_event->position.y);
-                }
-                update_cursor(window);
-            } else if (event->is<sf::Event::MouseEntered>()) {
-                /*
-                    mouse enters the window
-                */
-            } else if (event->is<sf::Event::MouseLeft>()) {
-                /*
-                    mouse exits the window
-                */
-            } else if (const auto* const keypressed_event = event->getIf<sf::Event::KeyPressed>()) {
-                this->handle_keypressed(static_cast<int>(keypressed_event->code));
-            } else if (const auto* const wheel_event = event->getIf<sf::Event::MouseWheelScrolled>()) {
-                if (wheel_event->delta != 0) {
-                    this->handle_mouse_wheel(wheel_event->delta > 0 ? 1 : -1, wheel_event->position.x, wheel_event->position.y);
-                }
-            }             
-        }
-        window->clear(sf::Color::Black, 0);
-        paint_children(window, true);
-        for (auto it = m_floating_components.rbegin(); it != m_floating_components.rend(); it++) {
-            it->get()->paint_children(window);
-        }
-        if (m_component_in_drag) {
-            m_component_in_drag->paint_children(window, false);
-        }
-        window->display();
+            if (m_mouse_right_pressed && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+                m_mouse_right_pressed = false;
+                this->handle_mouse_right_released(mouse_moved_event->position.x, mouse_moved_event->position.y);
+            }
+            if (m_mouse_middle_pressed && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle)) {
+                m_mouse_middle_pressed = false;
+                this->handle_mouse_middle_released(mouse_moved_event->position.x, mouse_moved_event->position.y);
+            }
+            update_cursor(m_window.get());
+        } else if (event->is<sf::Event::MouseEntered>()) {
+            /*
+                mouse enters the window
+            */
+        } else if (event->is<sf::Event::MouseLeft>()) {
+            /*
+                mouse exits the window
+            */
+        } else if (const auto* const keypressed_event = event->getIf<sf::Event::KeyPressed>()) {
+            this->handle_keypressed(static_cast<int>(keypressed_event->code));
+        } else if (const auto* const wheel_event = event->getIf<sf::Event::MouseWheelScrolled>()) {
+            if (wheel_event->delta != 0) {
+                this->handle_mouse_wheel(wheel_event->delta > 0 ? 1 : -1, wheel_event->position.x, wheel_event->position.y);
+            }
+        }             
+    }
+    m_window->clear(sf::Color::Black, 0);
+    paint_children(m_window.get(), true);
+    for (auto it = m_floating_components.rbegin(); it != m_floating_components.rend(); it++) {
+        it->get()->paint_children(m_window.get());
+    }
+    if (m_component_in_drag) {
+        m_component_in_drag->paint_children(m_window.get(), false);
+    }
+    m_window->display();
+}
+
+void Window::run() {
+    clock::restart_clock();
+    while (m_window->isOpen()) {
+        pool_events();
     }
 }
 
